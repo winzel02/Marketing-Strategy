@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class UserInterface : MonoBehaviour {
 
 
-	public GameObject storeButton, storePanel;
+	public GameObject storeButton, storePanel, shopInfo,levelImage;
 	Text cashText;
 	public List<GameObject> storeShopList = new List<GameObject>();
 
@@ -25,12 +25,14 @@ public class UserInterface : MonoBehaviour {
 		storePanel.SetActive (true);
 		storeButton.SetActive (false);
 		cashText.gameObject.SetActive (false);
+		levelImage.SetActive (false);
 	}
 	public void StoreExit()
 	{
 		storePanel.SetActive (false);
 		storeButton.SetActive (true);
 		cashText.gameObject.SetActive (true);
+		levelImage.SetActive (true);
 	}
 	public void StoreClick()
 	{
@@ -48,5 +50,22 @@ public class UserInterface : MonoBehaviour {
 			}
 		}
 
+	}
+
+	public void ShopMove() //Init in script
+	{
+		GameObject selectedToMove = EventSystem.current.currentSelectedGameObject;
+		selectedToMove.transform.parent.gameObject.SetActive (false);
+		selectedToMove.transform.parent.transform.parent.transform.parent.gameObject.AddComponent<ObjectDrag>();
+		ObjectDrag dragScrip = selectedToMove.transform.parent.transform.parent.transform.parent.gameObject.GetComponent<ObjectDrag> ();
+		dragScrip.justMoving = true;
+	}
+	public void ShopInfo() //Init in script
+	{
+		shopInfo.SetActive (true);
+	}
+	public void ShopInfoExit()
+	{
+		shopInfo.SetActive (false);
 	}
 }

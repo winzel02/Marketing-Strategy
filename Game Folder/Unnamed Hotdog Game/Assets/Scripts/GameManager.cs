@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 			return _gManager;
 		}
 	}
-	public int buyerPercentage = 20;
+	public float buyerPercentage = 50;
 	public int numberOfCrowd;
 	public List<GameObject> storeList = new List<GameObject>();
 	public GameObject[] sides;

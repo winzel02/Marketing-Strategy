@@ -3,8 +3,16 @@ using System.Collections;
 
 public class ObjectDrag : MonoBehaviour {
 
-	float gridSize = 1f;
-	public bool placable;
+	float gridSize = 1.01f;
+	public bool placable = true;
+	GameObject moveImage;
+	public bool justMoving;
+
+	void Awake()
+	{
+		moveImage = gameObject.transform.GetChild(0).gameObject.transform.Find ("MoveImage").gameObject;
+		moveImage.SetActive (true);
+	}
 
 	void OnTriggerEnter(Collider coll)
 	{
@@ -27,11 +35,17 @@ public class ObjectDrag : MonoBehaviour {
 	void OnMouseUp()
 	{
 		if (placable) {
-			StoreInfo info = GetComponent<StoreInfo> ();
-			GameManager.GM.storeList.Add (this.gameObject);
-			print ("Store Placed");
-			GameManager.GM.currentCash -= info.cashRequiredToBuy;
-			Destroy (this);
+			if (justMoving) {
+				moveImage.SetActive (false);
+				Destroy (this);
+			} else {
+				StoreInfo info = GetComponent<StoreInfo> ();
+				GameManager.GM.storeList.Add (this.gameObject);
+				GameManager.GM.currentCash -= info.cashRequiredToBuy;
+				transform.parent = GameObject.Find ("Stores").transform;
+				moveImage.SetActive (false);
+				Destroy (this);
+			}
 		}
 	}
 }

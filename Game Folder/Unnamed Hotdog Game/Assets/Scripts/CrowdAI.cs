@@ -4,17 +4,16 @@ using System.Collections;
 public class CrowdAI : MonoBehaviour {
 
 	public bool isBuying, doneBuying, isPassing;
-	MeshRenderer mesh;
 	Vector3 storeTargetPos, sides;
 	private Vector3 storeTargetOffset;
 	bool eating;
-
-
+	float randomNumber;
+	int totalChances = 0;
 	GameObject storeTarget;
 	void Awake()
 	{
-		mesh = GetComponent<MeshRenderer> ();
 		isBuying = false;
+
 
 	}
 	void Start()
@@ -25,6 +24,35 @@ public class CrowdAI : MonoBehaviour {
 	{
 		sides = GameManager.GM.sides[Random.Range(0, GameManager.GM.sides.Length)].transform.position;
 		sides.x = Random.Range (-4.8f, 1f);
+
+	}
+	void GenerateRandomStoreTarget()
+	{
+		for (int i = 0; i < GameManager.GM.storeList.Count; i++) {
+			StoreInfo info = GameManager.GM.storeList [i].GetComponent<StoreInfo> ();
+			totalChances += info.buyerChance;
+		}
+		float chance;
+		randomNumber = Random.Range (0f, GameManager.GM.buyerPercentage);
+		chance = 0f;
+		GameObject[] storeListToArray = GameManager.GM.storeList.ToArray ();
+		chance = (float)storeListToArray[0].GetComponent<StoreInfo>().buyerChance / totalChances * GameManager.GM.buyerPercentage;
+
+		if (randomNumber > 0 && randomNumber <= chance) {
+			storeTarget = storeListToArray [0];
+			storeTargetPos = storeTarget.transform.position;
+			storeTargetOffset = new Vector3 (storeTargetPos.x - 2.41f, storeTargetPos.y - 0.52f, storeTargetPos.z + Random.Range (-0.5f, 0.5f));
+		} else {
+			for (int i = 1; i < GameManager.GM.storeList.Count; i++) {
+				StoreInfo info = GameManager.GM.storeList [i].GetComponent<StoreInfo> ();
+				chance = (float)info.buyerChance / totalChances * GameManager.GM.buyerPercentage + chance;
+				if (randomNumber > (float)info.buyerChance / totalChances * GameManager.GM.buyerPercentage - info.buyerChance && randomNumber <= chance) {
+					storeTarget = info.gameObject;
+					storeTargetPos = storeTarget.transform.position;
+					storeTargetOffset = new Vector3 (storeTargetPos.x - 2.41f, storeTargetPos.y - 0.52f, storeTargetPos.z + Random.Range (-0.5f, 0.5f));
+				}
+			}
+		}
 	}
 	IEnumerator Reuse()
 	{
@@ -35,11 +63,10 @@ public class CrowdAI : MonoBehaviour {
 		yield return new WaitForSeconds (Random.Range (2f, 20f));
 		GenerateRandomSidePosition ();
 		transform.position = sides;
-		int possibilityToBuy = Random.Range (0, 100);
-		if (possibilityToBuy < GameManager.GM.buyerPercentage) {
-			storeTarget = GameManager.GM.storeList [Random.Range(0, GameManager.GM.storeList.Count)];
-			storeTargetPos = storeTarget.transform.position;
-			storeTargetOffset = new Vector3 (storeTargetPos.x - 2.41f, storeTargetPos.y - 0.52f, storeTargetPos.z + Random.Range(-0.5f, 0.5f));
+		int buyNumber = Random.Range (0, 100);
+
+		if (buyNumber < GameManager.GM.buyerPercentage) {
+			GenerateRandomStoreTarget ();
 			GenerateRandomSidePosition ();
 			isBuying = true;
 		} else{
@@ -67,6 +94,7 @@ public class CrowdAI : MonoBehaviour {
 	}
 	IEnumerator BuyingAI()
 	{
+		doneBuying = false;
 		if (eating) {
 			transform.LookAt (storeTargetOffset);
 			transform.Translate (Vector3.forward * Time.deltaTime * GameManager.GM.crowdMovespeed);
@@ -75,23 +103,24 @@ public class CrowdAI : MonoBehaviour {
 			eating = false;
 			transform.LookAt (new Vector3(storeTargetPos.x, storeTargetPos.y - 0.52f, storeTargetPos.z));
 			yield return new WaitForSeconds (Random.Range (3, 7));
-			isBuying = false;
 			doneBuying = true;
+			isBuying = false;
 		}
 		yield break;
 	}
 	IEnumerator DoneBuying()
 	{	
+		
 		if (!eating) {
 			GenerateRandomSidePosition ();
-			eating = true;
 			StoreInfo storeScript = storeTarget.GetComponent<StoreInfo> ();
 			GameManager.GM.currentCash += storeScript.cashToEarn;
-			print ("Just earned " + storeScript.cashToEarn + " from level " + storeScript.storeLevel + " " + storeScript.selectedStoreType.ToString() + " store");
+			print ("Just earned " + storeScript.cashToEarn + " from level " + storeScript.storeLevel + " " + storeScript.storeType.ToString() + " store");
+			eating = true;
 		}
 		transform.LookAt (sides);
 		transform.Translate (Vector3.forward * Time.deltaTime * GameManager.GM.crowdMovespeed);
-		if (Vector3.Distance (transform.position, sides) < 0.01f) {
+		if (Vector3.Distance (transform.position, sides) < 0.1f) {
 			doneBuying = false;
 			DisEnable ();
 			yield break;
