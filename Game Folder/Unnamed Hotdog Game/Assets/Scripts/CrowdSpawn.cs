@@ -6,7 +6,7 @@ public class CrowdSpawn : MonoBehaviour {
 
 	[SerializeField] private GameObject crowdGO;
 
-	public List<GameObject> crowdList = new List<GameObject>();
+
 	void Start()
 	{
 		InstantiateCrowds ();
@@ -18,7 +18,7 @@ public class CrowdSpawn : MonoBehaviour {
 			//CrowdAI aiScript = instantiated.GetComponent<CrowdAI>();
 			instantiated.name = "Crowd";
 			instantiated.transform.parent = GameManager.GM.crowdPool.transform;
-			crowdList.Add (instantiated);
+			GameManager.GM.crowdList.Add (instantiated);
 		}
 	}
 }

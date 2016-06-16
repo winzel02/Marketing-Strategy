@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.EventSystems;
 public class TouchInput : MonoBehaviour {
 
 	//Specifically on the GameObject.
 	public LayerMask mask;
-	public GameObject currentSelectedStore, lastSelectedStore;
+	public GameObject currentSelectedStore;
+	public GameObject lastSelectedStore;
 	public float dragSpeed = 2f;
 	Vector3 dragOrigin;
 	void Update(){
@@ -14,38 +15,51 @@ public class TouchInput : MonoBehaviour {
 		RaycastHit hit = new RaycastHit();
 		//EDITOR_BUILD
 		#if UNITY_EDITOR
-		if(Input.GetMouseButtonDown(0)){
-			dragOrigin = Input.mousePosition;
-			if(Physics.Raycast(ray, out hit,100f, mask)){
-				currentSelectedStore = hit.collider.gameObject;
-				if(lastSelectedStore == null){
-					currentSelectedStore.transform.SendMessage("Selected", hit.point, SendMessageOptions.DontRequireReceiver);
+		if(!EventSystem.current.IsPointerOverGameObject()){
+			if(Input.GetMouseButtonDown(0)){
+				dragOrigin = Input.mousePosition;
+
+				if(Physics.Raycast(ray, out hit,100f, mask)){
 					lastSelectedStore = currentSelectedStore;
-				} else if(lastSelectedStore != null) {
-					if(currentSelectedStore == lastSelectedStore){
+					currentSelectedStore = hit.collider.gameObject;
+					if(lastSelectedStore == null){
 						currentSelectedStore.transform.SendMessage("Selected", hit.point, SendMessageOptions.DontRequireReceiver);
-					}
-					if(currentSelectedStore != lastSelectedStore){
-						currentSelectedStore.transform.SendMessage("Selected", hit.point, SendMessageOptions.DontRequireReceiver);
-						lastSelectedStore.transform.SendMessage("DeSelected", hit.point, SendMessageOptions.DontRequireReceiver);
 						lastSelectedStore = currentSelectedStore;
+					} else if(lastSelectedStore != null) {
+						if(!currentSelectedStore.GetComponent<ObjectDrag>()){
+							if(currentSelectedStore == lastSelectedStore){
+								currentSelectedStore.transform.SendMessage("Selected", hit.point, SendMessageOptions.DontRequireReceiver);
+							}
+							if(currentSelectedStore != lastSelectedStore){
+								if(lastSelectedStore.GetComponent<ObjectDrag>()){
+									lastSelectedStore.transform.GetChild(0).gameObject.transform.Find ("MoveImage").gameObject.SetActive(false);
+									Destroy( lastSelectedStore.GetComponent<ObjectDrag>());
+								}
+								currentSelectedStore.transform.SendMessage("Selected", hit.point, SendMessageOptions.DontRequireReceiver);
+								lastSelectedStore.transform.SendMessage("DeSelected", hit.point, SendMessageOptions.DontRequireReceiver);
+
+						}
+					}
 					}
 				}
-			}	
+				if(currentSelectedStore != null){
+					if(!Physics.Raycast(ray, out hit, 100f, mask))
+						currentSelectedStore.transform.SendMessage("DeSelected", hit.point, SendMessageOptions.DontRequireReceiver);
+				}
+			}
+			if (Input.GetMouseButton(0))
+			{
+				Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
+				Vector3 move = new Vector3(pos.x * dragSpeed, pos.y * dragSpeed, 0f);
+				transform.Translate(move, Space.Self);
+				Vector3 clampPosition = transform.position;
+				clampPosition.x = Mathf.Clamp(clampPosition.x, -11f, -7f);
+				clampPosition.y = Mathf.Clamp(clampPosition.y, 7f ,8f);
+				clampPosition.z = Mathf.Clamp(clampPosition.z, -12f, -6f);
+				transform.position = clampPosition;
+				//Touching On Specifically on the GameObject's Collider.
+			}
 		}
-		if (Input.GetMouseButton(0))
-		{
-			Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
-			Vector3 move = new Vector3(pos.x * dragSpeed, pos.y * dragSpeed, 0f);
-			transform.Translate(move, Space.Self);
-			Vector3 clampPosition = transform.position;
-			clampPosition.x = Mathf.Clamp(clampPosition.x, -11f, -7f);
-			clampPosition.y = Mathf.Clamp(clampPosition.y, 7f ,8f);
-			clampPosition.z = Mathf.Clamp(clampPosition.z, -12f, -6f);
-			transform.position = clampPosition;
-			//Touching On Specifically on the GameObject's Collider.
-		}
-
 		#endif
 		/*ANDROID BUILD
 		if (Input.touchCount > 0)

@@ -7,13 +7,14 @@ using UnityEngine.EventSystems;
 public class UserInterface : MonoBehaviour {
 
 
-	public GameObject storeButton, storePanel, shopInfo,levelImage;
+	public GameObject storeButton, storePanel, shopInfo,levelImage, editBaseButton, editBaseExitButton;
 	Text cashText;
 	public List<GameObject> storeShopList = new List<GameObject>();
-
+	TouchInput touchInput;
 	void Awake()
 	{
 		cashText = transform.FindChild ("CashText").GetComponent<Text> ();
+		touchInput = Camera.main.GetComponent<TouchInput> ();
 	}
 
 	void Update()
@@ -36,15 +37,17 @@ public class UserInterface : MonoBehaviour {
 	}
 	public void StoreClick()
 	{
+		
 		foreach (GameObject store in storeShopList) {
 			if (store.name == EventSystem.current.currentSelectedGameObject.name) {
 				StoreInfo info = store.GetComponent<StoreInfo> ();
 				if (GameManager.GM.currentCash >= info.cashRequiredToBuy) {
+					if(touchInput.currentSelectedStore != null)
+						touchInput.currentSelectedStore.transform.SendMessage("DeSelected", SendMessageOptions.DontRequireReceiver);
 					Instantiate (store, new Vector3 (0f, 0.53f, 0f), Quaternion.identity);
 					storePanel.SetActive (false);
 					storeButton.SetActive (true);
 					cashText.gameObject.SetActive (true);
-
 				} else
 					print ("Not Enough Money To Buy");
 			}
@@ -67,5 +70,34 @@ public class UserInterface : MonoBehaviour {
 	public void ShopInfoExit()
 	{
 		shopInfo.SetActive (false);
+	}
+	public void BaseEdit()
+	{
+		if(touchInput.currentSelectedStore != null)
+			touchInput.currentSelectedStore.transform.SendMessage ("DeSelected", SendMessageOptions.DontRequireReceiver);
+		editBaseButton.SetActive (false);
+		storeButton.SetActive (false);
+		cashText.gameObject.SetActive (false);
+		levelImage.SetActive (false);
+		editBaseExitButton.SetActive (true);
+		GameManager.GM.editBase = true;
+		foreach (GameObject crowd in GameManager.GM.crowdList) {
+			crowd.SetActive (false);
+		}
+
+	}
+	public void BaseEditExit()
+	{
+		if(touchInput.currentSelectedStore != null)
+			touchInput.currentSelectedStore.transform.SendMessage ("DeSelected", SendMessageOptions.DontRequireReceiver);
+		editBaseExitButton.SetActive (false);
+		editBaseButton.SetActive (true);
+		storeButton.SetActive (true);
+		cashText.gameObject.SetActive (true);
+		levelImage.SetActive (true);
+		GameManager.GM.editBase = false;
+		foreach (GameObject crowd in GameManager.GM.crowdList) {
+			crowd.SetActive (true);
+		}
 	}
 }

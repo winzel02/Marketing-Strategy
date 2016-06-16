@@ -88,9 +88,9 @@ public class CrowdAI : MonoBehaviour {
 		if (isBuying)
 			StartCoroutine (BuyingAI ());
 		if (doneBuying)
-			StartCoroutine (DoneBuying ());
+			DoneBuying ();
 		if (isPassing)
-			StartCoroutine (JustPassing ());
+			JustPassing ();
 	}
 	IEnumerator BuyingAI()
 	{
@@ -108,11 +108,11 @@ public class CrowdAI : MonoBehaviour {
 		}
 		yield break;
 	}
-	IEnumerator DoneBuying()
+	void DoneBuying()
 	{	
 		
 		if (!eating) {
-			GenerateRandomSidePosition ();
+			
 			StoreInfo storeScript = storeTarget.GetComponent<StoreInfo> ();
 			GameManager.GM.currentCash += storeScript.cashToEarn;
 			print ("Just earned " + storeScript.cashToEarn + " from level " + storeScript.storeLevel + " " + storeScript.storeType.ToString() + " store");
@@ -120,25 +120,28 @@ public class CrowdAI : MonoBehaviour {
 		}
 		transform.LookAt (sides);
 		transform.Translate (Vector3.forward * Time.deltaTime * GameManager.GM.crowdMovespeed);
-		if (Vector3.Distance (transform.position, sides) < 0.1f) {
-			doneBuying = false;
+		if (Vector3.Distance (transform.position, sides) < 0.01f) {
 			DisEnable ();
-			yield break;
+			doneBuying = false;
 		}
 	}
-	IEnumerator JustPassing()
+	void JustPassing()
 	{
 		transform.LookAt (sides);
 		transform.Translate (Vector3.forward * Time.deltaTime * GameManager.GM.crowdMovespeed);
 		if (Vector3.Distance (transform.position, sides) < 0.01f) {
-			isPassing = false;
 			DisEnable ();
+			isPassing = false;
 		}
-		yield break;
 	}
 	void DisEnable()
 	{
-		transform.position = new Vector3 (0f, -10f, 0f);
+		transform.rotation = new Quaternion (0f, 0f, 0f,0f);
+		transform.position = new Vector3 (8f, -10f, 10f);
 		StartCoroutine (Reuse ());
+	}
+	void OnEnable()
+	{
+		DisEnable ();
 	}
 }

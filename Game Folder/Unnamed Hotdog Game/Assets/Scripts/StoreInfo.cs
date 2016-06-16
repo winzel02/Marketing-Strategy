@@ -17,7 +17,7 @@ public class StoreInfo : MonoBehaviour {
 	public int buyerChance;
 
 	int cashEarning;
-	GameObject selectedButton;
+	GameObject selectedButton, editSelectedButton;
 	Button moveButton, infoButton;
 	UserInterface uiScript;
 	//Fix Chance of Buyer to buy
@@ -25,7 +25,9 @@ public class StoreInfo : MonoBehaviour {
 	{
 		uiScript = GameObject.Find ("Canvas").GetComponent<UserInterface> ();
 		selectedButton = gameObject.transform.GetChild (0).gameObject.transform.FindChild ("ButtonSelect").gameObject;
-		moveButton = selectedButton.transform.FindChild ("Move").gameObject.GetComponent<Button>();
+		editSelectedButton = gameObject.transform.GetChild (0).gameObject.transform.FindChild ("EditSelect").gameObject;
+
+		moveButton = editSelectedButton.transform.FindChild ("Move").gameObject.GetComponent<Button>();
 		moveButton.onClick.AddListener (uiScript.ShopMove);
 
 		infoButton = selectedButton.transform.FindChild ("Info").gameObject.GetComponent<Button>();
@@ -44,10 +46,16 @@ public class StoreInfo : MonoBehaviour {
 	}
 	void Selected()
 	{
-		selectedButton.SetActive (true);
+		if (!GameManager.GM.editBase)
+			selectedButton.SetActive (true);
+		else
+			editSelectedButton.SetActive (true);
 	}
 	void DeSelected()
 	{
-		selectedButton.SetActive (false);
+		if (!GameManager.GM.editBase)
+			selectedButton.SetActive (false);
+		else
+			editSelectedButton.SetActive (false);
 	}
 }

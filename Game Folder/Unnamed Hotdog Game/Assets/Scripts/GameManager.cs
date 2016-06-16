@@ -18,10 +18,11 @@ public class GameManager : MonoBehaviour {
 	public float buyerPercentage = 50;
 	public int numberOfCrowd;
 	public List<GameObject> storeList = new List<GameObject>();
+	public List<GameObject> crowdList = new List<GameObject>();
 	public GameObject[] sides;
 	public GameObject crowdPool;
 	public float crowdMovespeed = 1;
-
+	public bool editBase;
 	public int currentCash;
 
 	void Awake()
