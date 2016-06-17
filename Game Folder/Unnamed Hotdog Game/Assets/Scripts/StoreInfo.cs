@@ -24,8 +24,8 @@ public class StoreInfo : MonoBehaviour {
 	void Awake()
 	{
 		uiScript = GameObject.Find ("Canvas").GetComponent<UserInterface> ();
-		selectedButton = gameObject.transform.GetChild (0).gameObject.transform.FindChild ("ButtonSelect").gameObject;
-		editSelectedButton = gameObject.transform.GetChild (0).gameObject.transform.FindChild ("EditSelect").gameObject;
+		selectedButton = gameObject.transform.GetChild (0).transform.GetChild (0).transform.FindChild ("ButtonSelect").gameObject;
+		editSelectedButton = gameObject.transform.GetChild (0).transform.GetChild (0).transform.FindChild  ("EditSelect").gameObject;
 
 		moveButton = editSelectedButton.transform.FindChild ("Move").gameObject.GetComponent<Button>();
 		moveButton.onClick.AddListener (uiScript.ShopMove);

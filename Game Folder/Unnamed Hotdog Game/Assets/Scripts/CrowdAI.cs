@@ -41,15 +41,15 @@ public class CrowdAI : MonoBehaviour {
 		if (randomNumber > 0 && randomNumber <= chance) {
 			storeTarget = storeListToArray [0];
 			storeTargetPos = storeTarget.transform.position;
-			storeTargetOffset = new Vector3 (storeTargetPos.x - 2.41f, storeTargetPos.y - 0.52f, storeTargetPos.z + Random.Range (-0.5f, 0.5f));
-		} else {
+			storeTargetOffset = new Vector3 (storeTargetPos.x- 2.41f, storeTargetPos.y, storeTargetPos.z + Random.Range (-0.5f, 0.5f));
+		} else if(randomNumber > chance) {
 			for (int i = 1; i < GameManager.GM.storeList.Count; i++) {
 				StoreInfo info = GameManager.GM.storeList [i].GetComponent<StoreInfo> ();
 				chance = (float)info.buyerChance / totalChances * GameManager.GM.buyerPercentage + chance;
 				if (randomNumber > (float)info.buyerChance / totalChances * GameManager.GM.buyerPercentage - info.buyerChance && randomNumber <= chance) {
 					storeTarget = info.gameObject;
 					storeTargetPos = storeTarget.transform.position;
-					storeTargetOffset = new Vector3 (storeTargetPos.x - 2.41f, storeTargetPos.y - 0.52f, storeTargetPos.z + Random.Range (-0.5f, 0.5f));
+					storeTargetOffset = new Vector3 (storeTargetPos.x - 2.41f, storeTargetPos.y, storeTargetPos.z + Random.Range (-0.5f, 0.5f));
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class CrowdAI : MonoBehaviour {
 		}
 		if (Vector3.Distance (transform.position, storeTargetOffset) < 0.01f) {
 			eating = false;
-			transform.LookAt (new Vector3(storeTargetPos.x, storeTargetPos.y - 0.52f, storeTargetPos.z));
+			transform.LookAt (new Vector3(storeTargetPos.x, storeTargetPos.y, storeTargetPos.z));
 			yield return new WaitForSeconds (Random.Range (3, 7));
 			doneBuying = true;
 			isBuying = false;
@@ -140,7 +140,7 @@ public class CrowdAI : MonoBehaviour {
 		transform.position = new Vector3 (8f, -10f, 10f);
 		StartCoroutine (Reuse ());
 	}
-	void OnEnable()
+	void ReEnable()
 	{
 		DisEnable ();
 	}

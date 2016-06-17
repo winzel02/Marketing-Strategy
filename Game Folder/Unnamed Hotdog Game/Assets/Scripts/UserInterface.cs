@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class UserInterface : MonoBehaviour {
 
 
-	public GameObject storeButton, storePanel, shopInfo,levelImage, editBaseButton, editBaseExitButton;
+	public GameObject storeButton, storePanel, shopInfo,levelImage, editBaseButton, editBaseExitButton, gridGO;
 	Text cashText;
 	public List<GameObject> storeShopList = new List<GameObject>();
 	TouchInput touchInput;
@@ -44,7 +44,8 @@ public class UserInterface : MonoBehaviour {
 				if (GameManager.GM.currentCash >= info.cashRequiredToBuy) {
 					if(touchInput.currentSelectedStore != null)
 						touchInput.currentSelectedStore.transform.SendMessage("DeSelected", SendMessageOptions.DontRequireReceiver);
-					Instantiate (store, new Vector3 (0f, 0.53f, 0f), Quaternion.identity);
+					Instantiate (store, new Vector3 (0f, 0f, 0f), Quaternion.identity);
+					touchInput.currentSelectedStore = store;
 					storePanel.SetActive (false);
 					storeButton.SetActive (true);
 					cashText.gameObject.SetActive (true);
@@ -59,8 +60,7 @@ public class UserInterface : MonoBehaviour {
 	{
 		GameObject selectedToMove = EventSystem.current.currentSelectedGameObject;
 		selectedToMove.transform.parent.gameObject.SetActive (false);
-		selectedToMove.transform.parent.transform.parent.transform.parent.gameObject.AddComponent<ObjectDrag>();
-		ObjectDrag dragScrip = selectedToMove.transform.parent.transform.parent.transform.parent.gameObject.GetComponent<ObjectDrag> ();
+		ObjectDrag dragScrip =  selectedToMove.transform.parent.transform.parent.transform.parent.transform.parent.gameObject.AddComponent<ObjectDrag>();
 		dragScrip.justMoving = true;
 	}
 	public void ShopInfo() //Init in script
@@ -80,6 +80,7 @@ public class UserInterface : MonoBehaviour {
 		cashText.gameObject.SetActive (false);
 		levelImage.SetActive (false);
 		editBaseExitButton.SetActive (true);
+		gridGO.SetActive (true);
 		GameManager.GM.editBase = true;
 		foreach (GameObject crowd in GameManager.GM.crowdList) {
 			crowd.SetActive (false);
@@ -95,9 +96,11 @@ public class UserInterface : MonoBehaviour {
 		storeButton.SetActive (true);
 		cashText.gameObject.SetActive (true);
 		levelImage.SetActive (true);
+		gridGO.SetActive (false);
 		GameManager.GM.editBase = false;
 		foreach (GameObject crowd in GameManager.GM.crowdList) {
 			crowd.SetActive (true);
+			crowd.transform.SendMessage ("ReEnable", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 }

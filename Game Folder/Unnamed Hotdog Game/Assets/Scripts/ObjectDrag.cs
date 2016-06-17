@@ -3,14 +3,14 @@ using System.Collections;
 
 public class ObjectDrag : MonoBehaviour {
 
-	float gridSize = 1.01f;
+	public float gridSize = 1f;
 	public bool placable = true;
 	GameObject moveImage;
 	public bool justMoving;
 
 	void Awake()
 	{
-		moveImage = gameObject.transform.GetChild(0).gameObject.transform.Find ("MoveImage").gameObject;
+		moveImage = gameObject.transform.GetChild(0).transform.GetChild(0).transform.Find ("MoveImage").gameObject;
 		moveImage.SetActive (true);
 	}
 
@@ -28,7 +28,7 @@ public class ObjectDrag : MonoBehaviour {
 	{
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePosition.x = (int)((mousePosition.x + mousePosition.y)/gridSize)*gridSize + 1;
-		mousePosition.y = 0.53f;
+		mousePosition.y = 0f;
 		mousePosition.z = (int)((mousePosition.z + mousePosition.y)/gridSize)*gridSize + 9;
 		transform.position = mousePosition;
 	}

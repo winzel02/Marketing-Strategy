@@ -32,7 +32,7 @@ public class TouchInput : MonoBehaviour {
 							}
 							if(currentSelectedStore != lastSelectedStore){
 								if(lastSelectedStore.GetComponent<ObjectDrag>()){
-									lastSelectedStore.transform.GetChild(0).gameObject.transform.Find ("MoveImage").gameObject.SetActive(false);
+									lastSelectedStore.transform.GetChild(0).transform.GetChild(0).transform.Find ("MoveImage").gameObject.SetActive(false);
 									Destroy( lastSelectedStore.GetComponent<ObjectDrag>());
 								}
 								currentSelectedStore.transform.SendMessage("Selected", hit.point, SendMessageOptions.DontRequireReceiver);
