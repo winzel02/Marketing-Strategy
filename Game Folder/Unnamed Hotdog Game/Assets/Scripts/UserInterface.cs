@@ -27,6 +27,7 @@ public class UserInterface : MonoBehaviour {
 		storeButton.SetActive (false);
 		cashText.gameObject.SetActive (false);
 		levelImage.SetActive (false);
+		editBaseButton.SetActive (false);
 	}
 	public void StoreExit()
 	{
@@ -34,6 +35,7 @@ public class UserInterface : MonoBehaviour {
 		storeButton.SetActive (true);
 		cashText.gameObject.SetActive (true);
 		levelImage.SetActive (true);
+		editBaseButton.SetActive (true);
 	}
 	public void StoreClick()
 	{
@@ -49,6 +51,11 @@ public class UserInterface : MonoBehaviour {
 					storePanel.SetActive (false);
 					storeButton.SetActive (true);
 					cashText.gameObject.SetActive (true);
+					storeButton.SetActive (false);
+					gridGO.SetActive (true);
+					foreach (GameObject crowd in GameManager.GM.crowdList) {
+						crowd.SetActive (false);
+					}
 				} else
 					print ("Not Enough Money To Buy");
 			}
@@ -89,8 +96,11 @@ public class UserInterface : MonoBehaviour {
 	}
 	public void BaseEditExit()
 	{
-		if(touchInput.currentSelectedStore != null)
+		if (touchInput.currentSelectedStore != null) {
 			touchInput.currentSelectedStore.transform.SendMessage ("DeSelected", SendMessageOptions.DontRequireReceiver);
+			if (touchInput.currentSelectedStore.GetComponent<ObjectDrag> ())
+				touchInput.currentSelectedStore.transform.SendMessage ("OnMouseUp", SendMessageOptions.DontRequireReceiver);
+		}
 		editBaseExitButton.SetActive (false);
 		editBaseButton.SetActive (true);
 		storeButton.SetActive (true);
