@@ -17,21 +17,15 @@ public class StoreInfo : MonoBehaviour {
 	public int buyerChance;
 
 	int cashEarning;
-	GameObject selectedButton, editSelectedButton;
-	Button moveButton, infoButton;
-	UserInterface uiScript;
+	GameObject moveButton, sellButton, infoButton, canvas;
 	//Fix Chance of Buyer to buy
 	void Awake()
 	{
-		uiScript = GameObject.Find ("Canvas").GetComponent<UserInterface> ();
-		selectedButton = gameObject.transform.GetChild (0).transform.GetChild (0).transform.FindChild ("ButtonSelect").gameObject;
-		editSelectedButton = gameObject.transform.GetChild (0).transform.GetChild (0).transform.FindChild  ("EditSelect").gameObject;
+		canvas = GameObject.Find ("Canvas");
 
-		moveButton = editSelectedButton.transform.FindChild ("Move").gameObject.GetComponent<Button>();
-		moveButton.onClick.AddListener (uiScript.ShopMove);
-
-		infoButton = selectedButton.transform.FindChild ("Info").gameObject.GetComponent<Button>();
-		infoButton.onClick.AddListener (uiScript.ShopInfo);
+		moveButton = canvas.transform.Find ("MoveButton").gameObject;
+		sellButton = canvas.transform.Find ("SellButton").gameObject;
+		infoButton = canvas.transform.Find ("InfoButton").gameObject;
 
 		switch (storeType) {
 		case SelectedStoreType.Lemonnade:
@@ -46,16 +40,20 @@ public class StoreInfo : MonoBehaviour {
 	}
 	void Selected()
 	{
-		if (!GameManager.GM.editBase)
-			selectedButton.SetActive (true);
-		else
-			editSelectedButton.SetActive (true);
+		if (!GameManager.GM.editBase) {
+			infoButton.SetActive (true);
+		} else {
+			moveButton.SetActive (true);
+			sellButton.SetActive (true);
+		}
 	}
 	void DeSelected()
 	{
-		if (!GameManager.GM.editBase)
-			selectedButton.SetActive (false);
-		else
-			editSelectedButton.SetActive (false);
+		if (!GameManager.GM.editBase) {
+			infoButton.SetActive (false);
+		} else {
+			moveButton.SetActive (false);
+			sellButton.SetActive (false);
+		}
 	}
 }

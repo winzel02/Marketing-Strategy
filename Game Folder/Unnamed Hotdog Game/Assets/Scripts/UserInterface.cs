@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class UserInterface : MonoBehaviour {
 
 
-	public GameObject storeButton, storePanel, shopInfo,levelImage, editBaseButton, editBaseExitButton, gridGO;
+	public GameObject storeButton, storePanel, shopInfo,levelImage, editBaseButton, editBaseExitButton, gridGO, moveButton, infoButton, sellButton,cancelMoveButton;
 	Text cashText;
 	public List<GameObject> storeShopList = new List<GameObject>();
 	TouchInput touchInput;
@@ -39,7 +39,6 @@ public class UserInterface : MonoBehaviour {
 	}
 	public void StoreClick()
 	{
-		
 		foreach (GameObject store in storeShopList) {
 			if (store.name == EventSystem.current.currentSelectedGameObject.name) {
 				StoreInfo info = store.GetComponent<StoreInfo> ();
@@ -65,14 +64,16 @@ public class UserInterface : MonoBehaviour {
 
 	public void ShopMove() //Init in script
 	{
-		GameObject selectedToMove = EventSystem.current.currentSelectedGameObject;
-		selectedToMove.transform.parent.gameObject.SetActive (false);
-		ObjectDrag dragScrip =  selectedToMove.transform.parent.transform.parent.transform.parent.transform.parent.gameObject.AddComponent<ObjectDrag>();
-		dragScrip.justMoving = true;
+		GameObject selectedToMove = touchInput.currentSelectedStore;
+		selectedToMove.AddComponent<ObjectDrag> ();
+		editBaseExitButton.SetActive (false);
+		moveButton.SetActive (false);
+		sellButton.SetActive (false);
 	}
 	public void ShopInfo() //Init in script
 	{
 		shopInfo.SetActive (true);
+		infoButton.SetActive (false);
 	}
 	public void ShopInfoExit()
 	{
