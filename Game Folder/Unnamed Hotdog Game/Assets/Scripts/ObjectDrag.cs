@@ -42,7 +42,6 @@ public class ObjectDrag : MonoBehaviour {
 	void OnMouseDrag()
 	{
 		gridGO = ui.gridGO;
-		cancelMoveButton = ui.cancelMoveButton;
 		exitEditButton = ui.editBaseExitButton;
 		mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePosition.x = (int)((mousePosition.x + mousePosition.y)/gridSize)*gridSize + 1;
@@ -55,12 +54,20 @@ public class ObjectDrag : MonoBehaviour {
 		if (placable) {
 			
 			StoreInfo info = GetComponent<StoreInfo> ();
-			GameManager.GM.storeList.Add (this.gameObject);
-			GameManager.GM.currentCash -= info.cashRequiredToBuy;
-			transform.parent = GameObject.Find ("Stores").transform;
-			gridGO.SetActive (true);
-			exitEditButton.SetActive (true);
-			Destroy (this);
+			if (!GameManager.GM.editBase) {
+				GameManager.GM.storeList.Add (this.gameObject);
+				GameManager.GM.currentCash -= info.cashRequiredToBuy;
+				transform.parent = GameObject.Find ("Stores").transform;
+				gridGO.SetActive (true);
+				exitEditButton.SetActive (true);
+				Destroy (this);
+			} else {
+				Destroy (this);
+				exitEditButton.SetActive (true);
+			}
+
+
+			GameManager.GM.editBase = true;
 
 			transform.position = new Vector3 (transform.position.x,0f, transform.position.z);
 		}

@@ -4,6 +4,7 @@ using System.Collections;
 public class CrowdAI : MonoBehaviour {
 
 	public bool isBuying, doneBuying, isPassing;
+	public int supplyDeduction;
 	Vector3 storeTargetPos, sides;
 	private Vector3 storeTargetOffset;
 	bool eating;
@@ -100,11 +101,22 @@ public class CrowdAI : MonoBehaviour {
 			transform.Translate (Vector3.forward * Time.deltaTime * GameManager.GM.crowdMovespeed);
 		}
 		if (Vector3.Distance (transform.position, storeTargetOffset) < 0.01f) {
+			StoreInfo storeScript = storeTarget.GetComponent<StoreInfo> ();
 			eating = false;
-			transform.LookAt (new Vector3(storeTargetPos.x, storeTargetPos.y, storeTargetPos.z));
-			yield return new WaitForSeconds (Random.Range (3, 7));
-			doneBuying = true;
-			isBuying = false;
+			if (storeScript.currentSupply >= supplyDeduction) {
+				transform.LookAt (new Vector3 (storeTargetPos.x, storeTargetPos.y, storeTargetPos.z));
+				yield return new WaitForSeconds (Random.Range (3, 7));
+				doneBuying = true;
+				isBuying = false;
+			} else {
+				transform.LookAt (new Vector3 (storeTargetPos.x, storeTargetPos.y, storeTargetPos.z));
+				//Add Mad or disappointed gesture.
+				//Fix Negative Supply Hold.
+				yield return new WaitForSeconds (1);
+				print ("Not enough Stocks");
+				isPassing = true;
+				isBuying = false;
+			}
 		}
 		yield break;
 	}
@@ -114,6 +126,7 @@ public class CrowdAI : MonoBehaviour {
 		if (!eating) {
 			
 			StoreInfo storeScript = storeTarget.GetComponent<StoreInfo> ();
+			storeScript.currentSupply -= supplyDeduction;
 			GameManager.GM.currentCash += storeScript.cashToEarn;
 			print ("Just earned " + storeScript.cashToEarn + " from level " + storeScript.storeLevel + " " + storeScript.storeType.ToString() + " store");
 			eating = true;

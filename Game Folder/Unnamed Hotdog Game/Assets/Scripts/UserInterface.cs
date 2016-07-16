@@ -7,7 +7,8 @@ using UnityEngine.EventSystems;
 public class UserInterface : MonoBehaviour {
 
 
-	public GameObject storeButton, storePanel, shopInfo,levelImage, editBaseButton, editBaseExitButton, gridGO, moveButton, infoButton, sellButton,cancelMoveButton;
+	public GameObject storeButton, storePanel, shopInfo,levelImage, editBaseButton, editBaseExitButton, gridGO, moveButton,
+					  infoButton, sellButton,cancelMoveButton, shopStoresPanel, shopHousesPanel, shopDecorationsPanel, restockButton;
 	Text cashText;
 	public List<GameObject> storeShopList = new List<GameObject>();
 	TouchInput touchInput;
@@ -74,6 +75,16 @@ public class UserInterface : MonoBehaviour {
 	{
 		shopInfo.SetActive (true);
 		infoButton.SetActive (false);
+		restockButton.SetActive (false);
+	}
+	public void RestockSupply()
+	{
+		
+		StoreInfo currentStore = Camera.main.GetComponent<TouchInput>().currentSelectedStore.GetComponent<StoreInfo>();
+		float cost = ((float)(currentStore.maximumSupplyHold - currentStore.currentSupply) / currentStore.maximumSupplyHold) * currentStore.costForRestock;
+		GameManager.GM.currentCash -= (int)cost;
+		currentStore.currentSupply = currentStore.maximumSupplyHold;
+
 	}
 	public void ShopInfoExit()
 	{
@@ -114,4 +125,23 @@ public class UserInterface : MonoBehaviour {
 			crowd.transform.SendMessage ("ReEnable", SendMessageOptions.DontRequireReceiver);
 		}
 	}
+	public void ShopStoresPanel()
+	{
+		shopStoresPanel.SetActive (true);
+		shopHousesPanel.SetActive (false);
+		shopDecorationsPanel.SetActive (false);
+	}
+	public void ShopHousesPanel()
+	{
+		shopStoresPanel.SetActive (false);
+		shopHousesPanel.SetActive (true);
+		shopDecorationsPanel.SetActive (false);
+	}
+	public void ShopDecorationsPanel()
+	{
+		shopStoresPanel.SetActive (false);
+		shopHousesPanel.SetActive (false);
+		shopDecorationsPanel.SetActive (true);
+	}
+
 }
